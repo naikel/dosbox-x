@@ -1858,9 +1858,13 @@ void GFX_DrawNotification() {
     if (notification.enabled) {
         int barHeight = Notification_getScale() * 16;
         int x, y, w, h;
-        x = 0; y = sdl.surface->h - barHeight;
-        w = sdl.surface->w; h = barHeight;
-        MenuDrawRect(x, y, w, h, GFX_GetRGB(64,64,64));
+        
+        x = (sdl.surface->w / 2) - (sdl.clip.w / 2);
+        y = sdl.surface->h - barHeight;
+        w = sdl.clip.w;
+        h = barHeight;
+
+        MenuDrawRect(x, y, w, h, GFX_GetRGB(64, 64, 64));
         MenuDrawText(x, y,notification.message,GFX_GetRGB(255, 255, 255));
         Notification_check();
     }

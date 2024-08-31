@@ -1123,7 +1123,7 @@ void OUTPUT_OPENGL_EndUpdate(const uint16_t *changedLines)
         GFX_DrawNotification();
 #endif
 
-            SDL_GL_SwapBuffers();
+        SDL_GL_SwapBuffers();
 
         if (!menu.hidecycles && !sdl.desktop.fullscreen) frames++;
     }
