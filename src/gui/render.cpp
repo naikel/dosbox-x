@@ -52,6 +52,8 @@
 #include <output/output_tools_xbrz.h>
 #include <output/output_opengl.h>
 
+#include "notification.h"
+
 extern bool video_debug_overlay;
 
 Render_t                                render;
@@ -273,7 +275,7 @@ static void RENDER_DrawLine_countdown(const void * s) {
 #endif
 
 static void RENDER_StartLineHandler(const void * s) {
-    if (RENDER_DrawLine_scanline_cacheHit(s)) { // line has not changed
+    if (!notification.redraw && RENDER_DrawLine_scanline_cacheHit(s)) { // line has not changed
         render.scale.cacheRead += render.scale.cachePitch;
         Scaler_ChangedLines[0] += Scaler_Aspect[ render.scale.inLine ];
         render.scale.inLine++;
@@ -322,6 +324,7 @@ static void RENDER_ClearCacheHandler(const void * src) {
 extern void GFX_SetTitle(int32_t cycles, int frameskip, Bits timing, bool paused);
 
 bool RENDER_StartUpdate(void) {
+
     if (GCC_UNLIKELY(render.updating))
         return false;
     if (GCC_UNLIKELY(!render.active))
@@ -357,7 +360,7 @@ bool RENDER_StartUpdate(void) {
             render.fullFrame = true;
         } else {
             RENDER_DrawLine = RENDER_StartLineHandler;
-            if (GCC_UNLIKELY(CaptureState & (CAPTURE_IMAGE|CAPTURE_VIDEO))) 
+            if (!notification.redraw || GCC_UNLIKELY(CaptureState & (CAPTURE_IMAGE|CAPTURE_VIDEO))) 
                 render.fullFrame = true;
             else
                 render.fullFrame = false;

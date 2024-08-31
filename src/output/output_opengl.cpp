@@ -948,7 +948,8 @@ bool OUTPUT_OPENGL_StartUpdate(uint8_t* &pixels, Bitu &pitch)
 
 void OUTPUT_OPENGL_EndUpdate(const uint16_t *changedLines)
 {
-    if (!(sdl.must_redraw_all && changedLines == NULL)) 
+
+    if (notification.redraw || !(sdl.must_redraw_all && changedLines == NULL)) 
     {
         if (sdl_opengl.clear_countdown > 0)
         {
@@ -1050,7 +1051,7 @@ void OUTPUT_OPENGL_EndUpdate(const uint16_t *changedLines)
         }
         else if (changedLines) 
         {
-            if (changedLines[0] == sdl.draw.height)
+            if (!notification.redraw && changedLines[0] == sdl.draw.height)
                 return;
 
             Bitu y = 0, index = 0;
@@ -1079,7 +1080,7 @@ void OUTPUT_OPENGL_EndUpdate(const uint16_t *changedLines)
                 }
                 index++;
             }
-        } else
+        } else if (!notification.redraw)
             return;
         if (sdl_opengl.program_object) {
             glUniform1i(sdl_opengl.ruby.frame_count, sdl_opengl.actual_frame_count++);
@@ -1117,11 +1118,10 @@ void OUTPUT_OPENGL_EndUpdate(const uint16_t *changedLines)
 
             glBindTexture(GL_TEXTURE_2D, sdl_opengl.texture);
 #endif
-
 #if DOSBOXMENU_TYPE == DOSBOXMENU_SDLDRAW
         void GFX_DrawNotification();
         GFX_DrawNotification();
-#endif
+#endif    
 
         SDL_GL_SwapBuffers();
 

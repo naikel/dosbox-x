@@ -2,7 +2,8 @@
 #define NOTIFICATION_TIMEOUT      2
 
 struct SDL_Notification {
-    bool enabled;
+    bool enabled = false;
+    bool redraw = false;
     char message[NOTIFICATION_MAX_CHARS];
     long start;
     unsigned int scale = 1;

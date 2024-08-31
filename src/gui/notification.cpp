@@ -17,11 +17,14 @@ void Notification_setScale(unsigned int s) {
 void Notification_send(const char *message) {
     strncpy(notification.message, message, NOTIFICATION_MAX_CHARS);
     notification.message[NOTIFICATION_MAX_CHARS] = '\0';
-    notification.enabled = true;
+    notification.enabled = notification.redraw = true;
     notification.start = std::time(nullptr);
 }
 
 void Notification_check() {
-    if (notification.enabled && (notification.start + NOTIFICATION_TIMEOUT) < std::time(nullptr))
-        notification.enabled = false;
+    if (notification.enabled) {
+        notification.redraw = false;
+        if ((notification.start + NOTIFICATION_TIMEOUT) < std::time(nullptr))
+            notification.enabled = false;
+    }
 }

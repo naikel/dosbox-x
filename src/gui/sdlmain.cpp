@@ -1855,6 +1855,11 @@ void GFX_Notification_setScale(unsigned int scale) {
     Notification_setScale(scale);
 }
 void GFX_DrawNotification() {
+    if (notification.redraw)
+        notification.redraw = false;
+    else 
+        Notification_check();
+
     if (notification.enabled) {
         int barHeight = Notification_getScale() * 16;
         int x, y, w, h;
@@ -1866,7 +1871,6 @@ void GFX_DrawNotification() {
 
         MenuDrawRect(x, y, w, h, GFX_GetRGB(64, 64, 64));
         MenuDrawText(x, y,notification.message,GFX_GetRGB(255, 255, 255));
-        Notification_check();
     }
 }
 void GFX_DrawSDLMenu(DOSBoxMenu &menu, DOSBoxMenu::displaylist &dl) {
@@ -2926,7 +2930,7 @@ bool GFX_StartUpdate(uint8_t* &pixels,Bitu &pitch)
 {
     if (!sdl.active || sdl.updating)
         return false;
-
+        
     switch (sdl.desktop.type)
     {
         case SCREEN_SURFACE:
