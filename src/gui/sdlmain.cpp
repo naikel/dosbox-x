@@ -248,6 +248,8 @@ extern "C" void sdl1_hax_macosx_highdpi_set_enable(const bool enable);
 #include "build_timestamp.h"
 #include "version_string.h"
 
+#include "notification.h"
+
 #if C_OPENGL
 namespace gl2 {
 extern PFNGLATTACHSHADERPROC glAttachShader;
@@ -1846,6 +1848,23 @@ void GFX_TearDown(void) {
 bool DOSBox_isMenuVisible(void);
 void MenuShadeRect(int x,int y,int w,int h);
 void MenuDrawRect(int x,int y,int w,int h,Bitu color);
+void MenuDrawText(int x,int y,const char *text,Bitu color,bool check=false);
+void GFX_DrawNotification();
+void GFX_Notification_setScale(unsigned int scale) {
+    LOG_MSG("%d", scale);
+    Notification_setScale(scale);
+}
+void GFX_DrawNotification() {
+    if (notification.enabled) {
+        int barHeight = Notification_getScale() * 16;
+        int x, y, w, h;
+        x = 0; y = sdl.surface->h - barHeight;
+        w = sdl.surface->w; h = barHeight;
+        MenuDrawRect(x, y, w, h, GFX_GetRGB(64,64,64));
+        MenuDrawText(x, y,notification.message,GFX_GetRGB(255, 255, 255));
+        Notification_check();
+    }
+}
 void GFX_DrawSDLMenu(DOSBoxMenu &menu, DOSBoxMenu::displaylist &dl) {
     if (!menu.needsRedraw() || (sdl.updating && !OpenGL_using())) {
         return;

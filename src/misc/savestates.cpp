@@ -36,6 +36,8 @@
 #include "../libs/tinyfiledialogs/tinyfiledialogs.h"
 #endif
 
+#include "notification.h"
+
 extern unsigned int page;
 extern int autosave_last[10], autosave_count;
 extern std::string autosave_name[10], savefilename;
@@ -144,6 +146,13 @@ size_t GetGameState(void) {
     return currentSlot;
 }
 
+void NotifySlotAction(char const *message, size_t currentSlot) {
+    char buffer[NOTIFICATION_MAX_CHARS];
+    std::string name = SaveState::instance().getName(currentSlot, false);
+    snprintf(buffer, NOTIFICATION_MAX_CHARS, "%s%d %s", message, (int)currentSlot + 1, name.c_str());
+    Notification_send(buffer);
+}
+
 void SetGameState(int value) {
 	char name[6]="slot0";
 	name[4]='0'+(char)(currentSlot%SaveState::SLOT_COUNT);
@@ -215,6 +224,7 @@ void NextSaveSlot(bool pressed) {
 
     const bool emptySlot = SaveState::instance().isEmpty(currentSlot);
     LOG_MSG("Active save slot: %d %s", (int)currentSlot + 1, emptySlot ? "[Empty]" : "");
+    NotifySlotAction("Slot: ", currentSlot);
 }
 
 void PreviousSaveSlot(bool pressed) {
@@ -231,6 +241,7 @@ void PreviousSaveSlot(bool pressed) {
 
     const bool emptySlot = SaveState::instance().isEmpty(currentSlot);
     LOG_MSG("Active save slot: %d %s", (int)currentSlot + 1, emptySlot ? "[Empty]" : "");
+    NotifySlotAction("Slot: ", currentSlot);
 }
 
 void LastAutoSaveSlot(bool pressed) {
@@ -1302,8 +1313,10 @@ delete_all:
 	remove(save2.c_str());
 	if (save_err)
 		notifyError("Failed to save the current state.");
-	else
+	else {
 		LOG_MSG("[%s]: Saved. (Slot %d)", getTime().c_str(), (int)slot+1);
+        NotifySlotAction("Saved slot: ", slot);
+    }
 }
 
 void savestatecorrupt(const char* part) {
@@ -1563,7 +1576,10 @@ delete_all:
 	remove(save2.c_str());
 	save2=temp+"Machine_Type";
 	remove(save2.c_str());
-	if (!load_err) LOG_MSG("[%s]: Loaded. (Slot %d)", getTime().c_str(), (int)slot+1);
+	if (!load_err) {
+	    LOG_MSG("[%s]: Loaded. (Slot %d)", getTime().c_str(), (int)slot+1);
+	    NotifySlotAction("Loaded slot: ", slot);
+	}
 }
 
 bool SaveState::isEmpty(size_t slot) const {

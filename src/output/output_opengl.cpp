@@ -24,6 +24,8 @@ extern "C" {
 #include "sdlmain.h"
 #include "render.h"
 
+#include "notification.h"
+
 using namespace std;
 
 extern Bitu frames;
@@ -226,6 +228,9 @@ retry:
         LOG_MSG("menuScale=%d", scale);
         mainMenu.setScale((unsigned int)scale);
 
+        void GFX_Notification_setScale(unsigned int scale);
+        GFX_Notification_setScale((unsigned int)scale);
+        
         if (mainMenu.isVisible() && !sdl.desktop.fullscreen && fixedHeight)
             fixedHeight -= mainMenu.menuBox.h;
     }
@@ -1111,6 +1116,11 @@ void OUTPUT_OPENGL_EndUpdate(const uint16_t *changedLines)
             glPopMatrix();
 
             glBindTexture(GL_TEXTURE_2D, sdl_opengl.texture);
+#endif
+
+#if DOSBOXMENU_TYPE == DOSBOXMENU_SDLDRAW
+        void GFX_DrawNotification();
+        GFX_DrawNotification();
 #endif
 
             SDL_GL_SwapBuffers();

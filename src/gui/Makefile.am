@@ -2,6 +2,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/src/aviwriter "-DRESDIR=\"
 
 noinst_LIBRARIES = libgui.a
 libgui_a_SOURCES = \
+	notification.cpp \
 	sdlmain_linux.cpp \
 	sdlmain.cpp sdl_mapper.cpp dosbox_logo.h \
 	render.cpp render_scalers.cpp render_scalers.h \
